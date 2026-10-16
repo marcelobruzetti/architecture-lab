@@ -1,17 +1,19 @@
-## Experimento H1 — Unicidade de códigos
+## Experiment H1 — Short Code Uniqueness
 
-Hipótese: a constraint UNIQUE do PostgreSQL impede
-a persistência de códigos duplicados sob concorrência.
+**Hypothesis:** PostgreSQL's `UNIQUE` constraint prevents duplicate short codes from being persisted under concurrent transactions.
 
-Resultados observados:
-- Inserção sequencial duplicada: rejeitada.
-- Duas transações concorrentes: a segunda aguardou.
-- Após COMMIT da primeira: segunda inserção rejeitada.
-- Após ROLLBACK da primeira: segunda inserção aceita.
+### Observed Results
 
-Conclusão:
-A constraint UNIQUE garante a integridade dos códigos
-nos cenários testados, sem locks na aplicação.
+- Sequential insertion with a duplicate short code: rejected.
+- Two concurrent transactions attempting to insert the same short code: the second transaction waited.
+- After the first transaction committed (`COMMIT`): the second insertion was rejected.
+- After the first transaction rolled back (`ROLLBACK`): the second insertion succeeded.
 
-Limitação:
-Não medimos o impacto da contenção sobre a latência.
+### Conclusion
+
+The `UNIQUE` constraint successfully enforced short code uniqueness in all tested scenarios, without requiring application-level locking.
+
+### Limitations
+
+- The performance impact of contention was not measured.
+- The experiment did not evaluate behavior under high concurrency.
